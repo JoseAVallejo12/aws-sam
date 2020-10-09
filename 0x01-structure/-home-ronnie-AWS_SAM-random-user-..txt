@@ -1,1 +1,0 @@
-/home/ronnie/AWS_SAM/random-user/.gitignore
