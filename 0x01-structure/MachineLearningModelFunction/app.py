@@ -3,7 +3,6 @@ import numpy as np
 from joblib import dump, load
 
 def lambda_handler(event, context):
-    print(event)
     data = event.get('multiValueQueryStringParameters')
     if data is None or data.get('userNew') is None:
         return {

@@ -34,3 +34,11 @@ Resources:
           Properties:
             Path: /cluster
             Method: get
+  
+  UserDatabase:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: customers
+      Tags:
+        Department: analisis
+        AppType: Serverless
