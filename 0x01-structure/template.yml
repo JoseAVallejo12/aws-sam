@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'random-user
+
+  Sample SAM Template for random-user
+
+  '
+Globals:
+  Function:
+    Runtime: python3.6
+    Timeout: 30
+
+Resources:
+  UserGenerator:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: UserGeneratorFunction
+      Handler: app.lambda_handler
+      Events:
+        UserGenerator:
+          Type: Api
+          Properties:
+            Path: /user
+            Method: get
+  
+  MachineLearningModel:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: MachineLearningModelFunction
+      Handler: app.lambda_handler
+      Events:
+        MachineLearningModel:
+          Type: Api
+          Properties:
+            Path: /cluster
+            Method: get
