@@ -11,18 +11,54 @@ Globals:
     Timeout: 30
 
 Resources:
-  UserGenerator:
+  DbGet:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: UserGeneratorFunction
+      CodeUri: DbGetFunction
       Handler: app.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: customers
       Events:
         UserGenerator:
           Type: Api
           Properties:
+            Path: /userget
+            Method: get
+        Stream:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt UserDatabase.StreamArn
+            BatchSize: 100
+            StartingPosition: TRIM_HORIZON
+
+  DbPost:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DbPostFunction
+      Handler: app.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: customers
+      Events:
+        UserGenerator:
+          Type: Api
+          Properties:
+            Path: /userpost
+            Method: post
+
+  UserGenerator:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: UserGeneratorFunction
+      Handler: app.lambda_handler
+      Events:
+        MachineLearningModel:
+          Type: Api
+          Properties:
             Path: /user
             Method: get
-  
+
   MachineLearningModel:
     Type: AWS::Serverless::Function 
     Properties:
@@ -34,11 +70,19 @@ Resources:
           Properties:
             Path: /cluster
             Method: get
-  
+
   UserDatabase:
-    Type: AWS::Serverless::SimpleTable
+    Type: AWS::DynamoDB::Table
     Properties:
       TableName: customers
-      Tags:
-        Department: analisis
-        AppType: Serverless
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
